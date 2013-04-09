@@ -1,0 +1,68 @@
+<apex:page showHeader="false" sidebar="false">
+
+	<apex:includeScript value="{!$Resource.JQuery172}"/>
+	<style type="text/css">
+		#viewport { background-color: blue; bottom: 0; left: 0; overflow: hidden; perspective: 400; position: absolute; right: 0; top: 0; }
+		#world { background-color: red; height: 512px; left: 50%; margin: -256px 0 0 -256px; position: absolute; top: 50%; transform-style: preserve-3d; width: 512px; }
+		.cloudBase { height: 20px; left: 256px; margin: -10px 0 0 -10px; position: absolute; top: 256px; width: 20px; }
+		#menu-items { list-style: none; margin: 0; padding: 0; text-align: center; }
+		#menu-items li { float: left; height: 170px; line-height: 170px; margin: 0; padding: 0; width: 170px; }
+		#menu-items li:hover { background-color: green; }
+	</style>
+
+	<script type="text/javascript">
+		var $j = jQuery.noConflict();
+
+		var Clouds = {
+			layers : [],
+			objects : [],
+			viewport : {},
+			world : {},
+			worldXAngle : 0,
+			worldYAngle : 0,
+			d : 0,
+			init : function() {
+				this.world = document.getElementById('world');
+				this.world.style.transition = 'all ease-out';
+				this.viewport = document.getElementById('viewport');
+			},
+			resetView : function() {
+				this.world.style.transform = 'translateZ(0) rotateX(0) rotateY(0)';
+			},
+			updateView : function() {
+				this.world.style.transform = 'translateZ(' + this.d + 'px) rotateX(' + this.worldXAngle + 'deg) rotateY(' + this.worldYAngle + 'deg)';
+			}
+		};
+
+		jQuery(function(){
+
+			Clouds.init();
+
+			jQuery('#world').mousemove(function(event){
+				Clouds.worldYAngle = ( .5 - ( event.clientX / window.innerWidth ) ) * 360;
+				Clouds.worldXAngle = - ( .5 - ( event.clientY / window.innerHeight ) ) * 360;
+				Clouds.updateView();
+			})
+			.mouseleave(function(event){
+				Clouds.resetView();
+			});
+		});
+	</script>
+
+	<div id="viewport">
+		<div id="world">
+			<ol id="menu-items">
+				<li>Item 1</li>
+				<li>Item 2</li>
+				<li>Item 3</li>
+				<li>Item 4</li>
+				<li>Item 5</li>
+				<li>Item 6</li>
+				<li>Item 7</li>
+				<li>Item 8</li>
+				<li>Item 9</li>
+			</ol>
+		</div>
+	</div>
+
+</apex:page>

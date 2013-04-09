@@ -1,0 +1,63 @@
+<apex:page sidebar="false" showHeader="false">
+
+	<apex:includeScript value="{!$Resource.theBigDB}"/>
+	<apex:includeScript value="{!$Resource.JQuery172}"/>
+
+	<style type="text/css">
+		#resultsList { list-style: none; margin: 0; padding: 0; }
+		#resultsList li { background-color: #CEF; border: 1px solid; display: block; float: left; padding: 1em; }
+		#resultsList li div { display: none; font-weight: bold; }
+		#resultsList li:hover div.attributeName { display: block; }
+		#resultsList li div.attributeValue { margin-left: 10px; font-style: italic; }
+	</style>
+	<script type="text/javascript">
+		var $j = jQuery.noConflict();
+		jQuery(function(){
+			theBigDB.init();
+			jQuery('#dbSearchButton').click(function(event){
+				theBigDB.search( jQuery('#dbSearch').val() );
+			});
+			jQuery('#resultsList').on('hover', 'div.attributeName', function(event){
+				jQuery(this).find('div.attributeValue').slideToggle(100);
+			});
+		});
+
+		var theBigDB = {
+			__theDB : {},
+			init : function() {
+				__theDB = new TheBigDB();
+			},
+			search : function( value ) {
+				__theDB.Statement('search',
+					{
+						nodes : [{match : value}]
+					},
+					function(data) {
+						var groupedNodes = {};
+						jQuery('#resultsList').empty();
+						for( var index=0; index<data.statements.length; index++ ){
+							var targetNodes = data.statements[index].nodes;
+							groupedNodes[targetNodes[0]] = groupedNodes[targetNodes[0]] || {};
+							groupedNodes[targetNodes[0]][targetNodes[1]] = targetNodes[2];
+						}
+						for( var key in groupedNodes ){
+							var $newItem = jQuery('<li/>').hide();
+							$newItem.append(jQuery('<h2/>').addClass('itemName').html(key));
+							for( var attribute in groupedNodes[key] ){
+								$newItem.append(jQuery('<div/>').addClass('attributeName').html(attribute)
+												.append(jQuery('<div/>').addClass('attributeValue').html(groupedNodes[key][attribute])));
+							}
+							jQuery('#resultsList').append($newItem);
+						}
+						jQuery('#resultsList li').slideDown();
+					}
+				);
+			}
+		};
+	</script>
+
+	<input id="dbSearch" type="text"/>
+	<input id="dbSearchButton" type="button" value="Search"/>
+	<ol id="resultsList"/>
+
+</apex:page>

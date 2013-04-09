@@ -1,0 +1,50 @@
+<apex:page controller="CodeCheckController" sidebar="false">
+
+	<apex:includeScript value="{!$Resource.JQuery172}"/>
+	<apex:includeScript value="{!$Resource.JQueryUI1_8_21}"/>
+	<apex:includeScript value="{!$Resource.jQueryBoxer}"/>
+	<apex:includeScript value="{!$Resource.jQueryQTip}"/>
+
+	<script type="text/javascript">
+		var $j = jQuery.noConflict();
+		function initBoxer() {
+			jQuery('[id$="classBody"]').boxer({
+				stop: function(event, ui) {
+					ui.box.addClass('boxed');
+					ui.box.qtip({
+						content: 'New box created',
+						position: {
+							corner: {
+								target: 'topRight',
+								tooltip: 'bottomLeft'
+							}
+						}
+					});
+				}
+			});
+		}
+		jQuery(function(){
+			initBoxer();
+		});
+	</script>
+
+	<apex:form id="reviewForm">
+		<apex:pageMessages id="messages"/>
+		<apex:pageBlock >
+			<apex:pageBlockSection id="reviewSection" columns="1">
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel for="classList" value="Class"/>
+					<apex:selectList id="classList" value="{!selectedClassId}" size="1">
+						<apex:actionSupport event="onchange" action="{!selectClass}" rerender="reviewForm" oncomplete="initBoxer();"/>
+						<apex:selectOptions value="{!allClasses}"/>
+					</apex:selectList>
+				</apex:pageBlockSectionItem>
+
+				<apex:outputPanel id="classBody" layout="block">
+					<apex:outputField value="{!selectedClass.Body}" rendered="{!NOT(ISBLANK(selectedClassId))}" style="cursor: default; white-space: pre; width: 50%;"/>
+				</apex:outputPanel>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+
+</apex:page>

@@ -1,0 +1,79 @@
+<apex:page controller="WidgetsController" showHeader="false" sidebar="false">
+
+    <apex:includeScript value="{!$Resource.JQuery172}"/>
+    <apex:includeScript value="{!$Resource.JQueryUI1_8_21}"/>
+    <apex:includeScript value="{!$Resource.JQDock}"/>
+    <apex:styleSheet value="{!URLFOR($Resource.JQueryUIImages, 'jquery-ui-1.8.21.custom.css')}"/>
+
+    <style type="text/css">
+        html, body { height: 100%; overflow:hidden; width: 100%; }
+        .widget { background-color: white; border: 1px solid; display: inline-block; float: left; padding: 5px; position: absolute; }
+        .widget-menu { display: block; height: 20px; left: 0; position: absolute; top: 0; width: 40px; }
+        .widget-menu .ui-icon { display: none; float: left; }
+        .taskbar { bottom: 0; position: absolute; }
+        .taskbar .taskbar-item { float: left; }
+    </style>
+
+    <script type="text/javascript">
+
+        $j = jQuery.noConflict();
+
+        jQuery.fn.widgetize = function(){
+
+            var $taskBar = jQuery('<div/>').addClass('taskbar')
+                .on('click','.taskbar-item',function(){
+                    jQuery(this).data('widget').fadeTo('fast',1);
+                    jQuery(this).remove();
+                })
+                .on('mouseover','.taskbar-item',function(){
+                    jQuery(this).data('widget').fadeTo('fast',0.4);
+                })
+                .on('mouseleave','.taskbar-item',function(){
+                    jQuery(this).data('widget').fadeOut();
+                });
+
+            jQuery('body').append( $taskBar );
+
+            this.draggable({
+                snap: true,
+                stack: '.widgets'
+            });
+
+            var $closeButton = jQuery('<span/>').addClass('ui-icon ui-icon-circle-close')
+                .click(function(e){
+                    jQuery(this).closest('.widget').fadeOut();
+                    e.stopPropagation();
+                });
+            var $minimize = jQuery('<span/>').addClass('ui-icon ui-icon-circle-minus')
+                .click(function(e){
+                    var $theWidget = jQuery(this).closest('.widget').slideUp();
+                    var $taskbarPlaceholder = jQuery('<span/>').addClass('taskbar-item ui-icon ui-icon-bookmark').data('widget',$theWidget);
+                    jQuery('div.taskbar').append($taskbarPlaceholder);
+                    e.stopPropagation();
+                });
+            var $menu = jQuery('<span/>').addClass('widget-menu').append($closeButton).append($minimize)
+                .mouseover(function(){
+                    jQuery(this).find('.ui-icon').stop(true,true).fadeIn();
+                })
+                .mouseleave(function(){
+                    jQuery(this).find('.ui-icon').fadeOut();
+                });
+
+            this.prepend( $menu );
+        };
+
+        jQuery(function(){
+            jQuery('.widget').widgetize();
+        });
+
+    </script>
+
+    <apex:outputPanel styleClass="widget">
+        <c:SiteLogin />
+    </apex:outputPanel>
+
+    <apex:outputPanel styleClass="widget">
+        <c:SiteFooter />
+    </apex:outputPanel>
+
+</apex:page>

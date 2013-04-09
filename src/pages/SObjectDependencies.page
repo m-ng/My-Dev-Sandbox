@@ -1,0 +1,28 @@
+<apex:page controller="SObjectDependenciesController">
+
+	<style type="text/css">
+		.generatedArea { width: 100%; }
+	</style>
+
+	<apex:form >
+
+		<apex:outputPanel >
+			<apex:pageMessages id="pageMesgs"/>
+		</apex:outputPanel>
+
+		<apex:pageBlock >
+			<apex:pageBlockSection columns="1">
+				<apex:selectList value="{!selectedSObjectName}" size="1">
+					<apex:selectOptions value="{!sObjectNames}" />
+					<apex:actionSupport event="onchange" action="{!getSObjectFields}" rerender="generatedSection, pageMesgs"/>
+				</apex:selectList>
+			</apex:pageBlockSection>
+
+			<apex:pageBlockSection id="generatedSection" columns="1">
+				<apex:inputTextArea rows="30" styleClass="generatedArea" value="{!generatedText}"/>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+
+	</apex:form>
+
+</apex:page>
